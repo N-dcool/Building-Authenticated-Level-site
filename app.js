@@ -31,6 +31,7 @@ mongoose.connect("mongodb://localhost:27017/userDB");
 
 const  userSchema = new mongoose.Schema({
     email : String,
+    username: String,
     password : String,
     googleId: String,
     secret: String
@@ -64,21 +65,9 @@ passport.use(new GoogleStrategy({
     state: true
   },
   function(accessToken, refreshToken, profile, cb) {
-    console.log(profile);
-    // const googleData = new User({
-    //     username: profile._json.name,
-    //     email: profile.provider,
-    //     googleId: profile.id
-    // });
-    // googleData.save(function(err){
-    //     if(!err){
-    //         console.log("google data saved successfully")
-    //     }else{
-    //         console.log(err);
-    //     }
-    // });
-    console.log(profile._json.name);
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    // console.log(profile);
+    // console.log(profile._json.name);
+    User.findOrCreate({ googleId: profile.id, username: profile._json.name, email: profile.emails[0].value}, function (err, user) {
       return cb(err, user);
     });
   }
@@ -91,7 +80,7 @@ app.get("/", function(req,res){
 });
 
 app.get("/auth/google",
-  passport.authenticate('google', { scope: ['profile'] }));
+  passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 app.get("/auth/google/secrets", 
   passport.authenticate('google', { failureRedirect: '/login' }),
@@ -161,17 +150,17 @@ app.post("/submit", function(req,res){
 });
 
 app.post("/register", function(req,res){
-    User.register({username: req.body.username}, req.body.password, function(err, user){
+    User.register({username : req.body.username, email : req.body.username}, req.body.password, function(err, user){
         if(err){
             console.log(err);
-            res.redirect("/register");
+            res.send(err);
         }
         else{
             passport.authenticate("local")(req,res,function(){
                 res.redirect("/secrets");
             })
         }
-    })
+    });
 });
 
 
