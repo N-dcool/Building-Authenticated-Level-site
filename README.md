@@ -1,5 +1,8 @@
 # Building-Authenticated-Level-site
-Authentication level 8
+Authentication level 1 upto 6.
+Level 5 include Hashing and Salting
+Level 6 google login authentication
+Site also store Cookies and Session.
 
 <img align="center" src="https://i.imgur.com/QAowa2n.png">
 <h4 align="center">🔑 Secrets 🔑</h4>
